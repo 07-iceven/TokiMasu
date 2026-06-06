@@ -2232,7 +2232,7 @@ export default function App() {
                             width: 'max-content',
                             marginBottom: `${Math.max(0, gapRow)}mm`,
                           }}
-                          className="no-print"
+                          className="select-none"
                         >
                           {Array.from({ length: settings.weeksPerLine || 1 }).flatMap((_, wIdx) => {
                             const labels = settings.monthLanguage === 'zh'
@@ -2267,7 +2267,7 @@ export default function App() {
                               height: 'max-content',
                               paddingTop: '0.2mm',
                             }}
-                            className="no-print"
+                            className="select-none"
                           >
                             {Array.from({ length: settings.weeksPerLine || 1 }).flatMap((_, wIdx) => {
                               const labels = settings.monthLanguage === 'zh'
