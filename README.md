@@ -1,6 +1,6 @@
 # 时格 · TokiMasu
 
-一个用于生成可打印时间格 / 打卡格纸张的前端工具，适合做习惯追踪、倒数日打卡、阶段计划、周历式记录和自定义方格打印模板。
+时格 · TokiMasu是一个极简的时间格子生成网站。设定日期，打印网格，每天用笔涂黑一格，用最真实的动作感知时间的流逝。
 
 ## 在线试用
 
@@ -73,6 +73,8 @@ npm run lint
 
 ```text
 TokiMasu/
+├─ public/
+│  └─ 404.html
 ├─ src/
 │  ├─ App.tsx
 │  ├─ index.css
@@ -89,15 +91,16 @@ TokiMasu/
 ## 资源说明
 
 - `Logo.svg` 同时用于页面头部 logo 和浏览器标签页 favicon
+- `public/404.html` 是 404 页面
 - `Maple Mono` 通过项目依赖内置打包，不依赖用户本地安装
 
 ## 字体说明
 
-- `Inter`：用于界面主字体和大部分 UI 文本
-- `Noto Serif SC`：用于品牌标题和更偏印刷感的中文衬线文本
-- `JetBrains Mono`：用于输入框、参数值和界面中的通用等宽文本
-- `Maple Mono`：用于格子中的主数字显示，已随项目一起打包，不依赖用户本地安装
-- 当 `Maple Mono` 在极端情况下加载失败时，格子数字会回退到 `JetBrains Mono`
+- `Inter`：项目主界面与大部分 UI 文本的默认字体
+- `Noto Serif SC`：用于需要更强印刷感的衬线文本
+- `JetBrains Mono`：用于界面中的通用等宽文本、参数值和辅助信息
+- `Maple Mono`：用于时间格子里的主数字显示，已随项目一起打包，不依赖用户本地安装
+- 当 `Maple Mono` 加载失败时，格子数字会回退到 `JetBrains Mono`
 
 ## 环境变量
 
