@@ -80,6 +80,7 @@ const encodeSettingsText = (cfgSettings: any): string => {
       gGp: cfgSettings.gridGap,
       gGpC: cfgSettings.gridGapCol,
       gGpR: cfgSettings.gridGapRow,
+      nGG: cfgSettings.noGridGap,
       sG: cfgSettings.syncGaps,
       gSh: cfgSettings.gridShape,
       bRad: cfgSettings.borderRadius,
@@ -118,7 +119,10 @@ const decodeSettingsText = (text: string): any | null => {
     try {
       const parsed = JSON.parse(clean);
       if (parsed && typeof parsed === 'object') {
-        return parsed;
+        return {
+          ...parsed,
+          noGridGap: parsed.noGridGap ?? true,
+        };
       }
     } catch (e) {}
   }
@@ -147,6 +151,7 @@ const decodeSettingsText = (text: string): any | null => {
         gridGap: parsed.gGp,
         gridGapCol: parsed.gGpC,
         gridGapRow: parsed.gGpR,
+        noGridGap: parsed.nGG ?? true,
         syncGaps: parsed.sG,
         gridShape: parsed.gSh,
         borderRadius: parsed.bRad,
@@ -188,6 +193,7 @@ const decodeSettingsText = (text: string): any | null => {
         gridWidth: parsed.gW,
         gridHeight: parsed.gH,
         gridGap: parsed.gGp,
+        noGridGap: parsed.noGridGap ?? true,
         gridShape: parsed.gShape,
         borderRadius: parsed.r,
         borderWidth: parsed.bW,
@@ -204,7 +210,10 @@ const decodeSettingsText = (text: string): any | null => {
     
     // Otherwise fallback direct mapping for legacy plain object imports
     if (parsed && typeof parsed === 'object') {
-      return parsed;
+      return {
+        ...parsed,
+        noGridGap: parsed.noGridGap ?? true,
+      };
     }
   } catch (e) {}
 
