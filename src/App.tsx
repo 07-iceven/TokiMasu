@@ -91,6 +91,7 @@ const encodeSettingsText = (cfgSettings: any): string => {
       mLng: cfgSettings.monthLanguage,
       iPat: cfgSettings.innerPattern,
       hWk: cfgSettings.highlightWeekends,
+      sWkL: cfgSettings.showWeekendLabels,
       sWkN: cfgSettings.showWeekNumbers,
       sSt: cfgSettings.showStats,
       pPad: cfgSettings.paperPadding,
@@ -122,6 +123,7 @@ const decodeSettingsText = (text: string): any | null => {
         return {
           ...parsed,
           noGridGap: parsed.noGridGap ?? true,
+          showWeekendLabels: parsed.showWeekendLabels ?? parsed.highlightWeekends ?? false,
         };
       }
     } catch (e) {}
@@ -162,6 +164,7 @@ const decodeSettingsText = (text: string): any | null => {
         monthLanguage: parsed.mLng,
         innerPattern: parsed.iPat,
         highlightWeekends: parsed.hWk,
+        showWeekendLabels: parsed.sWkL ?? parsed.hWk ?? false,
         showWeekNumbers: parsed.sWkN,
         showStats: parsed.sSt,
         paperPadding: parsed.pPad,
@@ -201,6 +204,7 @@ const decodeSettingsText = (text: string): any | null => {
         borderColor: parsed.bColor,
         innerPattern: parsed.inP,
         highlightWeekends: parsed.hW,
+        showWeekendLabels: parsed.hW ?? false,
         paperPadding: parsed.pPad,
         showWeekNumbers: parsed.weekN,
         showStats: parsed.stats,
@@ -213,6 +217,7 @@ const decodeSettingsText = (text: string): any | null => {
       return {
         ...parsed,
         noGridGap: parsed.noGridGap ?? true,
+        showWeekendLabels: parsed.showWeekendLabels ?? parsed.highlightWeekends ?? false,
       };
     }
   } catch (e) {}
@@ -252,6 +257,7 @@ export default function App() {
     monthLanguage: 'zh',
     innerPattern: 'empty',
     highlightWeekends: false,
+    showWeekendLabels: false,
     showWeekNumbers: false,
     showStats: false,
     paperPadding: 15,
@@ -1880,13 +1886,23 @@ export default function App() {
                     <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">3.3 标记</h3>
                   </div>
 
-                  {/* Weekend differentiation toggle */}
+                  {/* Weekend differentiation toggles */}
                   <label className="flex items-center justify-between cursor-pointer py-1">
-                    <span className="text-xs font-semibold text-neutral-700">突出周末</span>
+                    <span className="text-xs font-semibold text-neutral-700">突出周末颜色</span>
                     <input
                       type="checkbox"
                       checked={settings.highlightWeekends}
                       onChange={(e) => setSettings(p => ({ ...p, highlightWeekends: e.target.checked }))}
+                      className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between cursor-pointer py-1">
+                    <span className="text-xs font-semibold text-neutral-700">显示 Sa/Su 标注</span>
+                    <input
+                      type="checkbox"
+                      checked={settings.showWeekendLabels}
+                      onChange={(e) => setSettings(p => ({ ...p, showWeekendLabels: e.target.checked }))}
                       className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
                     />
                   </label>
@@ -2130,6 +2146,7 @@ export default function App() {
                       monthLanguage: 'zh',
                       innerPattern: 'empty',
                       highlightWeekends: false,
+                      showWeekendLabels: false,
                       showWeekNumbers: false,
                       showStats: false,
                       paperPadding: 15,
@@ -2474,8 +2491,9 @@ export default function App() {
                               baseStyles.borderRadius = '50%';
                             }
 
-                            // Weekend styling highlights
-                            const finalIsWeekend = settings.highlightWeekends && day.isWeekend;
+                            // Weekend styling is split into independent color and label toggles.
+                            const shouldHighlightWeekend = settings.highlightWeekends && day.isWeekend;
+                            const shouldShowWeekendLabel = settings.showWeekendLabels && day.isWeekend;
                             
                             // Blackout mode calculation
                             let isBlackedOut = false;
@@ -2488,12 +2506,12 @@ export default function App() {
 
                             const fontColorClass = isBlackedOut
                               ? 'text-white font-bold opacity-90'
-                              : (finalIsWeekend 
+                              : (shouldHighlightWeekend
                                 ? (day.dayOfWeek === 0 ? 'text-red-500 font-bold' : 'text-blue-500 font-bold') 
                                 : 'text-neutral-600');
                             
                             // Slight dotted borders for weekends if normal border is solid for gorgeous look
-                            if (finalIsWeekend) {
+                            if (shouldHighlightWeekend) {
                               if (settings.borderStyle === 'solid') {
                                 baseStyles.borderStyle = 'solid';
                               }
@@ -2521,7 +2539,7 @@ export default function App() {
                             let backgroundStyle: string | undefined = undefined;
                             if (isBlackedOut) {
                               backgroundStyle = settings.borderColor;
-                            } else if (finalIsWeekend) {
+                            } else if (shouldHighlightWeekend) {
                               backgroundStyle = '#fafafb';
                             }
 
@@ -2556,7 +2574,7 @@ export default function App() {
                                 {/* Inner patterns: always empty/blank now */}
 
                                 {/* Weekend day corner superscript label (very elegant planner touch) */}
-                                {finalIsWeekend && !isBlackedOut && gridSideLen >= 9 && (
+                                {shouldShowWeekendLabel && !isBlackedOut && gridSideLen >= 9 && (
                                   <span 
                                     style={{ 
                                       fontSize: `${gridSideLen * 0.2}mm`, 

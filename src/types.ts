@@ -40,6 +40,7 @@ export interface CalendarSettings {
   
   innerPattern: 'empty' | 'center-dot' | 'slash' | 'cross';
   highlightWeekends: boolean;
+  showWeekendLabels: boolean;
   showWeekNumbers: boolean;
   showStats: boolean;
   paperPadding: number; // mm (margin from edge of paper)
