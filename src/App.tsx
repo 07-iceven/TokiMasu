@@ -536,10 +536,12 @@ export default function App() {
   const customCountPerLine = settings.gridCountPerLine || 7;
   const currentWeekStartDay = settings.weekStartDay || 'monday';
   const alignWeekSpacers = settings.alignWeekSpacers !== false;
+  const isSquareLikeGridShape =
+    settings.gridShape === 'square' || settings.gridShape === 'rounded-square';
 
   const useSharedBorders =
     settings.noGridGap &&
-    (settings.gridShape === 'square' || settings.gridShape === 'rounded-square');
+    isSquareLikeGridShape;
   const gapCol = useSharedBorders
     ? 0
     : (settings.gridGapCol !== undefined ? settings.gridGapCol : settings.gridGap);
@@ -1246,46 +1248,66 @@ export default function App() {
                         { id: 'rounded-square', label: '方形', desc: '支持圆角' },
                         { id: 'circle', label: '圆形', desc: '简洁' }
                       ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => {
-                            const w = settings.gridWidth;
-                            const h = settings.gridHeight;
-                            const maxRadius = Math.min(w, h) / 2;
-                            let radius = 0;
-                            if (item.id === 'rounded-square') radius = Math.min(1.5, maxRadius);
-                            if (item.id === 'circle') radius = w / 2;
-                            setSettings(prev => ({
-                              ...prev,
-                              gridShape: item.id as GridShape,
-                              borderRadius: radius,
-                              ...(item.id === 'circle' ? { gridHeight: w, syncGridSize: true } : {})
-                            }));
-                          }}
-                          className={`py-2 px-1 rounded-sm border flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
-                            settings.gridShape === item.id
-                              ? 'bg-black border-black text-white'
-                              : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'
-                          }`}
-                        >
-                          <div className={`w-4 h-4 border ${settings.gridShape === item.id ? 'border-white' : 'border-neutral-700'} ${
+                        (() => {
+                          const isSelected =
+                            item.id === 'rounded-square'
+                              ? isSquareLikeGridShape
+                              : settings.gridShape === item.id;
+
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                const w = settings.gridWidth;
+                                const h = settings.gridHeight;
+                                const maxRadius = Math.min(w, h) / 2;
+                                let radius = 0;
+                                if (item.id === 'rounded-square') radius = Math.min(1.5, maxRadius);
+                                if (item.id === 'circle') radius = w / 2;
+                                setSettings(prev => ({
+                                  ...prev,
+                                  gridShape: item.id as GridShape,
+                                  borderRadius: radius,
+                                  ...(item.id === 'circle' ? { gridHeight: w, syncGridSize: true } : {})
+                                }));
+                              }}
+                              className={`py-2 px-1 rounded-sm border flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                                isSelected
+                                  ? 'bg-black border-black text-white'
+                                  : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+                              }`}
+                            >
+                              <div className={`w-4 h-4 border ${isSelected ? 'border-white' : 'border-neutral-700'} ${
                             item.id === 'circle' ? 'rounded-full' : 'rounded-2xs'
-                          }`} />
-                          <span className="text-[10px] font-bold tracking-tight">{item.label}</span>
-                        </button>
+                              }`} />
+                              <span className="text-[10px] font-bold tracking-tight">{item.label}</span>
+                            </button>
+                          );
+                        })()
                       ))}
                     </div>
                   </div>
 
                   {/* No spacing gap option (Only for rectangle) */}
-                  {settings.gridShape === 'rounded-square' && (
+                  {isSquareLikeGridShape && (
                     <div className="pt-2 pb-1 border-t border-neutral-100 mt-2">
                       <label className="flex items-center gap-2.5 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={settings.noGridGap || false}
-                          onChange={(e) => setSettings(p => ({ ...p, noGridGap: e.target.checked }))}
+                          onChange={(e) =>
+                            setSettings(p => ({
+                              ...p,
+                              noGridGap: e.target.checked,
+                              // Legacy `square` state behaves like the square preset.
+                              // When shared borders are turned off, switch to the
+                              // rounded-square implementation so radius controls work.
+                              gridShape: !e.target.checked && p.gridShape === 'square'
+                                ? 'rounded-square'
+                                : p.gridShape,
+                            }))
+                          }
                           className="accent-black rounded-sm h-4 w-4 cursor-pointer shrink-0"
                         />
                         <div className="flex flex-col select-none leading-tight font-sans">
@@ -1296,7 +1318,7 @@ export default function App() {
                   )}
 
                   {/* Custom Border Radius Slider for Rounded Square */}
-                  {settings.gridShape === 'rounded-square' && !settings.noGridGap && (() => {
+                  {isSquareLikeGridShape && !settings.noGridGap && (() => {
                     const maxBorderRadius = Math.max(0, Number((Math.min(settings.gridWidth, settings.gridHeight) / 2).toFixed(1)));
                     const displayRadius = Math.min(settings.borderRadius, maxBorderRadius);
                     return (
