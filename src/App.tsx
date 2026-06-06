@@ -2149,6 +2149,9 @@ export default function App() {
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>恢复默认</span>
               </button>
+              <p className="mt-2 text-center text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+                Built by iceven
+              </p>
             </div>
 
           </div>
