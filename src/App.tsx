@@ -2340,10 +2340,14 @@ export default function App() {
                           style={{
                             display: 'grid',
                             gridTemplateColumns: settings.orientation === 'horizontal' 
-                              ? `repeat(${actualCols}, ${settings.gridWidth}mm)` 
+                              ? (useSharedBorders && actualCols > 1
+                                  ? `${settings.gridWidth}mm repeat(${actualCols - 1}, ${settings.gridWidth - settings.borderWidth}mm)`
+                                  : `repeat(${actualCols}, ${settings.gridWidth}mm)`)
                               : undefined,
                             gridTemplateRows: settings.orientation === 'vertical' 
-                              ? `repeat(${actualRows}, ${settings.gridHeight}mm)` 
+                              ? (useSharedBorders && actualRows > 1
+                                  ? `${settings.gridHeight}mm repeat(${actualRows - 1}, ${settings.gridHeight - settings.borderWidth}mm)`
+                                  : `repeat(${actualRows}, ${settings.gridHeight}mm)`)
                               : undefined,
                             gridAutoFlow: settings.orientation === 'vertical' 
                               ? 'column' 
@@ -2372,32 +2376,16 @@ export default function App() {
                               ? itemIdx % actualRows
                               : Math.floor(itemIdx / actualCols);
 
+                            let marginLeft = useSharedBorders && colIdx > 0 ? `-${settings.borderWidth}mm` : '0';
+                            let marginTop = useSharedBorders && rowIdx > 0 ? `-${settings.borderWidth}mm` : '0';
+
                             if (item.type === 'placeholder') {
                               let bTop = `${settings.borderWidth}mm`;
-                              let bRight = '0px';
-                              let bBottom = '0px';
+                              let bRight = `${settings.borderWidth}mm`;
+                              let bBottom = `${settings.borderWidth}mm`;
                               let bLeft = `${settings.borderWidth}mm`;
 
-                              if (useSharedBorders) {
-                                const rightItem = getItemAt(colIdx + 1, rowIdx);
-                                if (!rightItem) {
-                                  bRight = `${settings.borderWidth}mm`;
-                                }
-                                const bottomItem = getItemAt(colIdx, rowIdx + 1);
-                                if (!bottomItem) {
-                                  bBottom = `${settings.borderWidth}mm`;
-                                }
-                              }
-
-                              let tColor = `${settings.borderColor}22`;
-                              let rColor = `${settings.borderColor}22`;
-                              let bColor = `${settings.borderColor}22`;
-                              let lColor = `${settings.borderColor}22`;
-
-                              let tStyle = 'solid';
-                              let rStyle = 'solid';
-                              let bStyle = 'solid';
-                              let lStyle = 'solid';
+                              let placeholderColor = `color-mix(in srgb, ${settings.borderColor} 20%, white)`;
 
                               const baseStyles: React.CSSProperties = {
                                 width: `${settings.gridWidth}mm`,
@@ -2407,19 +2395,21 @@ export default function App() {
                                 borderRightWidth: bRight,
                                 borderBottomWidth: bBottom,
                                 borderLeftWidth: bLeft,
-                                borderTopColor: tColor,
-                                borderRightColor: rColor,
-                                borderBottomColor: bColor,
-                                borderLeftColor: lColor,
-                                borderTopStyle: tStyle as any,
-                                borderRightStyle: rStyle as any,
-                                borderBottomStyle: bStyle as any,
-                                borderLeftStyle: lStyle as any,
+                                borderTopColor: placeholderColor,
+                                borderRightColor: placeholderColor,
+                                borderBottomColor: placeholderColor,
+                                borderLeftColor: placeholderColor,
+                                borderTopStyle: 'solid',
+                                borderRightStyle: 'solid',
+                                borderBottomStyle: 'solid',
+                                borderLeftStyle: 'solid',
                                 position: 'relative',
                                 zIndex: 1,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                marginLeft,
+                                marginTop,
                               };
   
                               // Rounded geometry configurations
@@ -2447,17 +2437,6 @@ export default function App() {
                             let bBottom = `${settings.borderWidth}mm`;
                             let bLeft = `${settings.borderWidth}mm`;
 
-                            if (useSharedBorders) {
-                              const rightItem = getItemAt(colIdx + 1, rowIdx);
-                              if (rightItem && rightItem.type === 'day') {
-                                bRight = '0px';
-                              }
-                              const bottomItem = getItemAt(colIdx, rowIdx + 1);
-                              if (bottomItem && bottomItem.type === 'day') {
-                                bBottom = '0px';
-                              }
-                            }
-
                             // Dynamic rendering styling properties based on shape, border and sizes
                             const baseStyles: React.CSSProperties = {
                               width: `${settings.gridWidth}mm`,
@@ -2475,6 +2454,8 @@ export default function App() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               transition: 'border-color 0.15s',
+                              marginLeft,
+                              marginTop,
                             };
   
                             // Rounded geometry configurations
