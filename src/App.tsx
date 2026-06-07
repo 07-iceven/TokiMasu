@@ -1998,7 +1998,7 @@ export default function App() {
               <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
                 <Bookmark className="w-4 h-4 text-black" />
                 <h3 className="flex items-center gap-2 text-xs font-bold text-neutral-800 tracking-wide">
-                  <span>📦 配置共享</span>
+                  <span>配置共享</span>
                   <span className="rounded-sm border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-700">
                     Beta
                   </span>
