@@ -2807,8 +2807,8 @@ export default function App() {
 
                   {/* Warning: If Grid overflows the Paper page! (Amazing craftsman check) */}
                   {isOverflow && (
-                    <div className="p-2.5 bg-amber-50 text-amber-800 rounded-sm text-[10px] border border-amber-200 flex items-start gap-1.5 leading-relaxed font-sans">
-                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                    <div className="p-2.5 bg-amber-50 text-amber-800 rounded-sm text-[10px] border border-amber-200 flex items-center gap-1.5 leading-relaxed font-sans">
+                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
                       <div>
                         <span className="font-bold">元素可能超过纸张范围。</span>
                         请注意检查。
