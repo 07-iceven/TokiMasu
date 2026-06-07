@@ -1029,11 +1029,22 @@ export default function App() {
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* Tab 2: Grid and Shape Styles */}
+            {activeSidebarTab === 'grid' && (
+              <div className="space-y-5 animate-fadeIn">
+                <div className="flex items-center gap-2 pb-1.5 border-b-2 border-neutral-800">
+                  <SlidersHorizontal className="w-4 h-4 text-black" />
+                  <h2 className="text-sm font-bold text-neutral-900 font-sans">2. 格子</h2>
+                </div>
+                
                 {/* Section C: Arrangement Switch */}
                 <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
                     <Layout className="w-4 h-4 text-black" />
-                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">1.3 排版</h3>
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.1 排版</h3>
                   </div>
 
                   {/* Orientation/Flow Direction Toggle */}
@@ -1224,22 +1235,11 @@ export default function App() {
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Tab 2: Grid and Shape Styles */}
-            {activeSidebarTab === 'grid' && (
-              <div className="space-y-5 animate-fadeIn">
-                <div className="flex items-center gap-2 pb-1.5 border-b-2 border-neutral-800">
-                  <SlidersHorizontal className="w-4 h-4 text-black" />
-                  <h2 className="text-sm font-bold text-neutral-900 font-sans">2. 格子</h2>
-                </div>
-                
-                {/* 2.1 Grid shape and size selection */}
+                {/* 2.2 Grid shape and size selection */}
                 <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
                     <Layout className="w-4 h-4 text-black" />
-                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.1 格子形状</h3>
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.2 格子形状</h3>
                   </div>
 
                   {/* Grid Shape Selector */}
@@ -1585,11 +1585,11 @@ export default function App() {
                   )}
                 </div>
 
-                {/* 2.2 Border customizer */}
+                {/* 2.3 Border customizer */}
                 <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
                     <SlidersHorizontal className="w-4 h-4 text-black" />
-                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.2 物理边框微调</h3>
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.3 物理边框微调</h3>
                   </div>
 
                   {/* Border Width (in mm, highly exact for printing) */}
