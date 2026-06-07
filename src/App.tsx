@@ -540,6 +540,7 @@ export default function App() {
   // Constants and fallbacks for custom layouts (Requested Feature)
   const currentFlowMode = settings.flowMode || 'week-wrap';
   const customCountPerLine = settings.gridCountPerLine || 7;
+  const customWeeksPerLine = Math.max(1, Math.floor(settings.weeksPerLine || 1));
   const currentWeekStartDay = settings.weekStartDay || 'monday';
   const alignWeekSpacers = settings.alignWeekSpacers !== false;
   const isSquareLikeGridShape =
@@ -605,7 +606,7 @@ export default function App() {
 
   if (settings.orientation === 'horizontal') {
     if (currentFlowMode === 'week-wrap') {
-      actualCols = 7 * (settings.weeksPerLine || 1);
+      actualCols = 7 * customWeeksPerLine;
     } else if (currentFlowMode === 'custom-count') {
       actualCols = customCountPerLine;
     } else if (currentFlowMode === 'auto-fill') {
@@ -617,7 +618,7 @@ export default function App() {
   } else {
     // vertical
     if (currentFlowMode === 'week-wrap') {
-      actualRows = 7 * (settings.weeksPerLine || 1);
+      actualRows = 7 * customWeeksPerLine;
     } else if (currentFlowMode === 'custom-count') {
       actualRows = customCountPerLine;
     } else if (currentFlowMode === 'auto-fill') {
@@ -1150,23 +1151,23 @@ export default function App() {
                         />
                         <div className="flex flex-col leading-none">
                           <span className="text-xs font-bold text-neutral-700">补齐首周空格</span>
-                          <span className="text-[9.5px] text-neutral-400 mt-1">用虚线格补齐开头空位</span>
+                          <span className="text-[9.5px] text-neutral-400 mt-1">补齐开头空位</span>
                         </div>
                       </label>
 
                       {/* Weeks Per Line selection (New Feature support: 按星期换行 支持单行显示多个星期) */}
                       <div className="pt-2 border-t border-neutral-200">
-                        <label className="block text-[9.5px] font-bold text-neutral-700 uppercase mb-1.5 font-sans">
+                        <label className="block text-[9.5px] font-bold text-neutral-700 uppercase font-sans">
                           每行周数
                         </label>
-                        <div className="grid grid-cols-4 gap-1">
+                        <div className="grid grid-cols-4 gap-1 mt-2">
                           {[1, 2, 3, 4].map((num) => (
                             <button
                               key={num}
                               type="button"
                               onClick={() => setSettings(p => ({ ...p, weeksPerLine: num }))}
                               className={`py-1 text-xs font-bold rounded-sm border cursor-pointer transition-all ${
-                                (settings.weeksPerLine || 1) === num
+                                customWeeksPerLine === num
                                   ? 'bg-black border-black text-white'
                                   : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                               }`}
@@ -1175,7 +1176,20 @@ export default function App() {
                             </button>
                           ))}
                         </div>
-                        <p className="mt-1 text-[9px] text-neutral-450 leading-tight">控制每行或每列显示几周。</p>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          step="1"
+                          value={customWeeksPerLine > 10 ? 10 : customWeeksPerLine}
+                          onChange={(e) => setSettings(p => ({ ...p, weeksPerLine: Number(e.target.value) }))}
+                          className="w-full mt-2 accent-black cursor-pointer h-1.5 bg-neutral-200 rounded-lg appearance-none"
+                        />
+                        <div className="flex justify-between text-[9px] font-mono text-neutral-400 mt-0.5">
+                          <span>1 周</span>
+                          <span>10 周</span>
+                        </div>
+                        <p className="mt-1 text-[9px] text-neutral-450 leading-tight">控制每行或每列显示几周，也可直接输入更大的数值。</p>
                       </div>
                     </div>
                   )}
@@ -2278,14 +2292,14 @@ export default function App() {
                         <div 
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: `repeat(${7 * (settings.weeksPerLine || 1)}, ${settings.gridWidth}mm)`,
+                            gridTemplateColumns: `repeat(${7 * customWeeksPerLine}, ${settings.gridWidth}mm)`,
                             columnGap: `${Math.max(0, gapCol)}mm`,
                             width: 'max-content',
                             marginBottom: `${Math.max(0, gapRow)}mm`,
                           }}
                           className="select-none"
                         >
-                          {Array.from({ length: settings.weeksPerLine || 1 }).flatMap((_, wIdx) => {
+                          {Array.from({ length: customWeeksPerLine }).flatMap((_, wIdx) => {
                             const labels = settings.monthLanguage === 'zh'
                               ? (currentWeekStartDay === 'monday'
                                 ? ['一', '二', '三', '四', '五', '六', '日']
@@ -2312,7 +2326,7 @@ export default function App() {
                           <div 
                             style={{
                               display: 'grid',
-                              gridTemplateRows: `repeat(${7 * (settings.weeksPerLine || 1)}, ${settings.gridHeight}mm)`,
+                              gridTemplateRows: `repeat(${7 * customWeeksPerLine}, ${settings.gridHeight}mm)`,
                               rowGap: `${Math.max(0, gapRow)}mm`,
                               marginRight: `${Math.max(0, gapCol)}mm`,
                               height: 'max-content',
@@ -2320,7 +2334,7 @@ export default function App() {
                             }}
                             className="select-none"
                           >
-                            {Array.from({ length: settings.weeksPerLine || 1 }).flatMap((_, wIdx) => {
+                            {Array.from({ length: customWeeksPerLine }).flatMap((_, wIdx) => {
                               const labels = settings.monthLanguage === 'zh'
                                 ? (currentWeekStartDay === 'monday'
                                   ? ['一', '二', '三', '四', '五', '六', '日']
@@ -2399,10 +2413,10 @@ export default function App() {
                               let bColor = `${settings.borderColor}22`;
                               let lColor = `${settings.borderColor}22`;
 
-                              let tStyle = 'dashed';
-                              let rStyle = 'dashed';
-                              let bStyle = 'dashed';
-                              let lStyle = 'dashed';
+                              let tStyle = 'solid';
+                              let rStyle = 'solid';
+                              let bStyle = 'solid';
+                              let lStyle = 'solid';
 
                               const baseStyles: React.CSSProperties = {
                                 width: `${settings.gridWidth}mm`,
