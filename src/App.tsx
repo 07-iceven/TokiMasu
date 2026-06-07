@@ -99,7 +99,6 @@ const encodeSettingsText = (cfgSettings: any): string => {
       gCPL: cfgSettings.gridCountPerLine,
       wPL: cfgSettings.weeksPerLine,
       wkSD: cfgSettings.weekStartDay,
-      alWS: cfgSettings.alignWeekSpacers,
       pOr: cfgSettings.paperOrientation,
       or: cfgSettings.orientation,
       bOM: cfgSettings.blackoutMode,
@@ -172,7 +171,6 @@ const decodeSettingsText = (text: string): any | null => {
         gridCountPerLine: parsed.gCPL,
         weeksPerLine: parsed.wPL || 1,
         weekStartDay: parsed.wkSD,
-        alignWeekSpacers: parsed.alWS,
         paperOrientation: parsed.pOr,
         orientation: parsed.or,
         blackoutMode: parsed.bOM || 'none',
@@ -268,7 +266,6 @@ export default function App() {
     blackedOutDates: [],
     noGridGap: true,
     weekStartDay: 'monday',
-    alignWeekSpacers: true,
   });
 
 
@@ -542,7 +539,6 @@ export default function App() {
   const customCountPerLine = settings.gridCountPerLine || 7;
   const customWeeksPerLine = Math.max(1, Math.floor(settings.weeksPerLine || 1));
   const currentWeekStartDay = settings.weekStartDay || 'monday';
-  const alignWeekSpacers = settings.alignWeekSpacers !== false;
   const isSquareLikeGridShape =
     settings.gridShape === 'square' || settings.gridShape === 'rounded-square';
 
@@ -563,7 +559,7 @@ export default function App() {
   const innerPaperHeightMm = settings.paperHeight - 2 * settings.paperPadding - verticalTitleAlloc - footerAlloc;
 
   // 1. Calculate padded grid slots for rendering
-  // If flowMode is week-wrap, we might prepend placeholder spacers to align first date correctly.
+  // In week-wrap mode, prepend placeholder slots so the first date aligns to its weekday.
   interface GridItem {
     type: 'day' | 'placeholder';
     dayInfo?: DayInfo;
@@ -572,7 +568,7 @@ export default function App() {
   }
   const listItems: GridItem[] = [];
 
-  if (currentFlowMode === 'week-wrap' && alignWeekSpacers && days.length > 0) {
+  if (currentFlowMode === 'week-wrap' && days.length > 0) {
     const firstDay = days[0];
     let startIdx = 0;
     if (currentWeekStartDay === 'monday') {
@@ -1141,22 +1137,8 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Align Spacers checkbox */}
-                      <label className="flex items-center gap-2 cursor-pointer pt-1">
-                        <input
-                          type="checkbox"
-                          checked={alignWeekSpacers}
-                          onChange={(e) => setSettings(p => ({ ...p, alignWeekSpacers: e.target.checked }))}
-                          className="accent-black rounded-sm h-3.5 w-3.5 cursor-pointer"
-                        />
-                        <div className="flex flex-col leading-none">
-                          <span className="text-xs font-bold text-neutral-700">补齐首周空格</span>
-                          <span className="text-[9.5px] text-neutral-400 mt-1">补齐开头空位</span>
-                        </div>
-                      </label>
-
                       {/* Weeks Per Line selection (New Feature support: 按星期换行 支持单行显示多个星期) */}
-                      <div className="pt-2 border-t border-neutral-200">
+                      <div className="pt-1 border-t border-neutral-200">
                         <label className="block text-[9.5px] font-bold text-neutral-700 uppercase font-sans">
                           每行周数
                         </label>
@@ -2171,7 +2153,6 @@ export default function App() {
                       blackedOutDates: [],
                       noGridGap: true,
                       weekStartDay: 'monday',
-                      alignWeekSpacers: true,
                     });
                   }
                 }}

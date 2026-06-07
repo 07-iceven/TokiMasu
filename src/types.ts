@@ -50,7 +50,6 @@ export interface CalendarSettings {
   gridCountPerLine?: number;
   weeksPerLine?: number; // Supports wrapping with multiple weeks per line
   weekStartDay?: 'monday' | 'sunday';
-  alignWeekSpacers?: boolean;
   paperOrientation?: 'portrait' | 'landscape';
 
   // Blackout strategy
