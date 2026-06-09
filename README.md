@@ -92,15 +92,15 @@ TokiMasu/
 
 - `Logo.svg` 同时用于页面头部 logo 和浏览器标签页 favicon
 - `public/404.html` 是 404 页面
-- `Maple Mono` 通过项目依赖内置打包，不依赖用户本地安装
+- `Maple Mono NF CN` 已随项目一起打包，不依赖用户本地安装
 
 ## 字体说明
 
 - `Inter`：项目主界面与大部分 UI 文本的默认字体
 - `Noto Serif SC`：用于需要更强印刷感的衬线文本
 - `JetBrains Mono`：用于界面中的通用等宽文本、参数值和辅助信息
-- `Maple Mono`：用于时间格子里的主数字显示，已随项目一起打包，不依赖用户本地安装
-- 当 `Maple Mono` 加载失败时，格子数字会回退到 `JetBrains Mono`
+- `Maple Mono NF CN`：用于时间格子里的主数字显示，已随项目一起打包，不依赖用户本地安装
+- 当 `Maple Mono NF CN` 加载失败时，格子数字会回退到 `JetBrains Mono`
 
 ## 环境变量
 
