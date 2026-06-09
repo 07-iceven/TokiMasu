@@ -41,6 +41,8 @@ export interface CalendarSettings {
   innerPattern: 'empty' | 'center-dot' | 'slash' | 'cross';
   highlightWeekends: boolean;
   showWeekendLabels: boolean;
+  showWeekdayHeaders?: boolean;
+  weekdayLanguage?: 'zh' | 'ja' | 'en';
   showWeekNumbers: boolean;
   showStats: boolean;
   paperPadding: number; // mm (margin from edge of paper)

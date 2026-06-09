@@ -92,6 +92,8 @@ const encodeSettingsText = (cfgSettings: any): string => {
       iPat: cfgSettings.innerPattern,
       hWk: cfgSettings.highlightWeekends,
       sWkL: cfgSettings.showWeekendLabels,
+      sWdH: cfgSettings.showWeekdayHeaders,
+      wdLng: cfgSettings.weekdayLanguage,
       sWkN: cfgSettings.showWeekNumbers,
       sSt: cfgSettings.showStats,
       pPad: cfgSettings.paperPadding,
@@ -123,6 +125,8 @@ const decodeSettingsText = (text: string): any | null => {
           ...parsed,
           noGridGap: parsed.noGridGap ?? true,
           showWeekendLabels: parsed.showWeekendLabels ?? parsed.highlightWeekends ?? false,
+          showWeekdayHeaders: parsed.showWeekdayHeaders ?? true,
+          weekdayLanguage: parsed.weekdayLanguage ?? (parsed.monthLanguage === 'zh' ? 'zh' : 'en'),
         };
       }
     } catch (e) {}
@@ -164,6 +168,8 @@ const decodeSettingsText = (text: string): any | null => {
         innerPattern: parsed.iPat,
         highlightWeekends: parsed.hWk,
         showWeekendLabels: parsed.sWkL ?? parsed.hWk ?? false,
+        showWeekdayHeaders: parsed.sWdH ?? true,
+        weekdayLanguage: parsed.wdLng ?? (parsed.mLng === 'zh' ? 'zh' : 'en'),
         showWeekNumbers: parsed.sWkN,
         showStats: parsed.sSt,
         paperPadding: parsed.pPad,
@@ -203,6 +209,8 @@ const decodeSettingsText = (text: string): any | null => {
         innerPattern: parsed.inP,
         highlightWeekends: parsed.hW,
         showWeekendLabels: parsed.hW ?? false,
+        showWeekdayHeaders: true,
+        weekdayLanguage: 'zh',
         paperPadding: parsed.pPad,
         showWeekNumbers: parsed.weekN,
         showStats: parsed.stats,
@@ -216,6 +224,8 @@ const decodeSettingsText = (text: string): any | null => {
         ...parsed,
         noGridGap: parsed.noGridGap ?? true,
         showWeekendLabels: parsed.showWeekendLabels ?? parsed.highlightWeekends ?? false,
+        showWeekdayHeaders: parsed.showWeekdayHeaders ?? true,
+        weekdayLanguage: parsed.weekdayLanguage ?? (parsed.monthLanguage === 'zh' ? 'zh' : 'en'),
       };
     }
   } catch (e) {}
@@ -256,6 +266,8 @@ export default function App() {
     innerPattern: 'empty',
     highlightWeekends: false,
     showWeekendLabels: false,
+    showWeekdayHeaders: true,
+    weekdayLanguage: 'zh',
     showWeekNumbers: false,
     showStats: false,
     paperPadding: 15,
@@ -539,6 +551,22 @@ export default function App() {
   const customCountPerLine = settings.gridCountPerLine || 7;
   const customWeeksPerLine = Math.max(1, Math.floor(settings.weeksPerLine || 1));
   const currentWeekStartDay = settings.weekStartDay || 'monday';
+  const currentWeekdayLanguage = settings.weekdayLanguage || (settings.monthLanguage === 'zh' ? 'zh' : 'en');
+  const weekdayLabelSets = {
+    zh: {
+      monday: ['一', '二', '三', '四', '五', '六', '日'],
+      sunday: ['日', '一', '二', '三', '四', '五', '六'],
+    },
+    ja: {
+      monday: ['月', '火', '水', '木', '金', '土', '日'],
+      sunday: ['日', '月', '火', '水', '木', '金', '土'],
+    },
+    en: {
+      monday: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      sunday: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    },
+  };
+  const weekdayLabels = weekdayLabelSets[currentWeekdayLanguage][currentWeekStartDay];
   const isSquareLikeGridShape =
     settings.gridShape === 'square' || settings.gridShape === 'rounded-square';
 
@@ -1118,6 +1146,40 @@ export default function App() {
                       <span className="block text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest border-b border-neutral-200 pb-1">
                         按周设置
                       </span>
+
+                      <label className="flex items-center justify-between cursor-pointer py-1">
+                        <span className="text-xs font-semibold text-neutral-700">显示顶部星期提示</span>
+                        <input
+                          type="checkbox"
+                          checked={settings.showWeekdayHeaders ?? true}
+                          onChange={(e) => setSettings(p => ({ ...p, showWeekdayHeaders: e.target.checked }))}
+                          className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
+                        />
+                      </label>
+
+                      <div className="pt-1 border-t border-neutral-200">
+                        <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">星期提示语言</label>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {[
+                            { id: 'zh', label: '中文' },
+                            { id: 'ja', label: '日本語' },
+                            { id: 'en', label: 'English' },
+                          ].map((item) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => setSettings(p => ({ ...p, weekdayLanguage: item.id as 'zh' | 'ja' | 'en' }))}
+                              className={`py-1 px-1 text-[10px] font-bold rounded-sm border cursor-pointer transition-all ${
+                                currentWeekdayLanguage === item.id
+                                  ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
+                                  : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
+                              }`}
+                            >
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                       
                       {/* First day of week option */}
                       <div>
@@ -2143,6 +2205,8 @@ export default function App() {
                       innerPattern: 'empty',
                       highlightWeekends: false,
                       showWeekendLabels: false,
+                      showWeekdayHeaders: true,
+                      weekdayLanguage: 'zh',
                       showWeekNumbers: false,
                       showStats: false,
                       paperPadding: 15,
@@ -2269,7 +2333,7 @@ export default function App() {
                       className="w-full flex-grow flex flex-col items-center justify-center"
                     >
                       {/* Optional Weekday Headers (for 'week-wrap' mode) */}
-                      {currentFlowMode === 'week-wrap' && settings.orientation === 'horizontal' && (
+                      {currentFlowMode === 'week-wrap' && (settings.showWeekdayHeaders ?? true) && settings.orientation === 'horizontal' && (
                         <div 
                           style={{
                             display: 'grid',
@@ -2281,14 +2345,7 @@ export default function App() {
                           className="select-none"
                         >
                           {Array.from({ length: customWeeksPerLine }).flatMap((_, wIdx) => {
-                            const labels = settings.monthLanguage === 'zh'
-                              ? (currentWeekStartDay === 'monday'
-                                ? ['一', '二', '三', '四', '五', '六', '日']
-                                : ['日', '一', '二', '三', '四', '五', '六'])
-                              : (currentWeekStartDay === 'monday'
-                                ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                                : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
-                            return labels.map((label, lIdx) => ({ label, key: `${wIdx}-${lIdx}` }));
+                            return weekdayLabels.map((label, lIdx) => ({ label, key: `${wIdx}-${lIdx}` }));
                           }).map(({ label, key }) => (
                             <div 
                               key={key} 
@@ -2303,7 +2360,7 @@ export default function App() {
 
                       <div className="flex flex-row items-center justify-center">
                         {/* Vertical Weekday labels */}
-                        {currentFlowMode === 'week-wrap' && settings.orientation === 'vertical' && (
+                        {currentFlowMode === 'week-wrap' && (settings.showWeekdayHeaders ?? true) && settings.orientation === 'vertical' && (
                           <div 
                             style={{
                               display: 'grid',
@@ -2316,14 +2373,7 @@ export default function App() {
                             className="select-none"
                           >
                             {Array.from({ length: customWeeksPerLine }).flatMap((_, wIdx) => {
-                              const labels = settings.monthLanguage === 'zh'
-                                ? (currentWeekStartDay === 'monday'
-                                  ? ['一', '二', '三', '四', '五', '六', '日']
-                                  : ['日', '一', '二', '三', '四', '五', '六'])
-                                : (currentWeekStartDay === 'monday'
-                                  ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                                  : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
-                              return labels.map((label, lIdx) => ({ label, key: `${wIdx}-${lIdx}` }));
+                              return weekdayLabels.map((label, lIdx) => ({ label, key: `${wIdx}-${lIdx}` }));
                             }).map(({ label, key }) => (
                               <div 
                                 key={key} 
