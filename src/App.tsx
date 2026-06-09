@@ -2031,15 +2031,17 @@ export default function App() {
                   </div>
 
                   {/* Weekend differentiation toggles */}
-                  <label className="flex items-center justify-between cursor-pointer py-1">
-                    <span className="text-xs font-semibold text-neutral-700">突出周末颜色</span>
-                    <input
-                      type="checkbox"
-                      checked={settings.highlightWeekends}
-                      onChange={(e) => setSettings(p => ({ ...p, highlightWeekends: e.target.checked }))}
-                      className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
-                    />
-                  </label>
+                  {settings.textMode !== 'month-mm' && (
+                    <label className="flex items-center justify-between cursor-pointer py-1">
+                      <span className="text-xs font-semibold text-neutral-700">突出周末颜色</span>
+                      <input
+                        type="checkbox"
+                        checked={settings.highlightWeekends}
+                        onChange={(e) => setSettings(p => ({ ...p, highlightWeekends: e.target.checked }))}
+                        className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
+                      />
+                    </label>
+                  )}
 
                   <label className="flex items-center justify-between cursor-pointer py-1">
                     <span className="text-xs font-semibold text-neutral-700">显示 Sa/Su 标注</span>
@@ -2616,7 +2618,7 @@ export default function App() {
                             }
 
                             // Weekend styling is split into independent color and label toggles.
-                            const shouldHighlightWeekend = settings.highlightWeekends && day.isWeekend;
+                            const shouldHighlightWeekend = settings.highlightWeekends && day.isWeekend && settings.textMode !== 'month-mm';
                             const shouldShowWeekendLabel = settings.showWeekendLabels && day.isWeekend;
                             
                             // Blackout mode calculation
