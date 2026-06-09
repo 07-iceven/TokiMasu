@@ -58,6 +58,7 @@ export interface CalendarSettings {
   blackoutMode?: 'none' | 'yesterday' | 'custom';
   blackedOutDates?: string[]; // list of formatted YYYY-MM-DD strings for custom blackouts
   noGridGap?: boolean; // Whether to collapse grid gaps to the negative border thickness
+  weekdayColors?: { [key: number]: string }; // Custom background colors for each weekday (0-6, 0=Sunday)
 }
 
 export interface DayInfo {

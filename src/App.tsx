@@ -104,7 +104,8 @@ const encodeSettingsText = (cfgSettings: any): string => {
       pOr: cfgSettings.paperOrientation,
       or: cfgSettings.orientation,
       bOM: cfgSettings.blackoutMode,
-      bOD: cfgSettings.blackedOutDates
+      bOD: cfgSettings.blackedOutDates,
+      wdCl: cfgSettings.weekdayColors
     };
     return btoa(unescape(encodeURIComponent(JSON.stringify(minified))));
   } catch (err) {
@@ -180,7 +181,8 @@ const decodeSettingsText = (text: string): any | null => {
         paperOrientation: parsed.pOr,
         orientation: parsed.or,
         blackoutMode: parsed.bOM || 'none',
-        blackedOutDates: parsed.bOD || []
+        blackedOutDates: parsed.bOD || [],
+        weekdayColors: parsed.wdCl || {}
       };
     }
     
@@ -278,6 +280,7 @@ export default function App() {
     blackedOutDates: [],
     noGridGap: true,
     weekStartDay: 'monday',
+    weekdayColors: {},
   });
 
 
@@ -592,6 +595,7 @@ export default function App() {
     type: 'day' | 'placeholder';
     dayInfo?: DayInfo;
     isWeekend: boolean;
+    dayOfWeek?: number;
     label?: string;
   }
   const listItems: GridItem[] = [];
@@ -611,6 +615,7 @@ export default function App() {
       listItems.push({
         type: 'placeholder',
         isWeekend: isWeekendSpacer,
+        dayOfWeek: mappedDayOfWeek,
       });
     }
   }
@@ -621,6 +626,7 @@ export default function App() {
       type: 'day',
       dayInfo: day,
       isWeekend: day.isWeekend,
+      dayOfWeek: day.dayOfWeek,
     });
   });
 
@@ -1157,32 +1163,34 @@ export default function App() {
                         />
                       </label>
 
-                      <div className="pt-1 border-t border-neutral-200">
-                        <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">星期提示语言</label>
-                        <div className="grid grid-cols-3 gap-1.5">
-                          {[
-                            { id: 'zh', label: '中文' },
-                            { id: 'ja', label: '日本語' },
-                            { id: 'en', label: 'English' },
-                          ].map((item) => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => setSettings(p => ({ ...p, weekdayLanguage: item.id as 'zh' | 'ja' | 'en' }))}
-                              className={`py-1 px-1 text-[10px] font-bold rounded-sm border cursor-pointer transition-all ${
-                                currentWeekdayLanguage === item.id
-                                  ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
-                                  : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
-                              }`}
-                            >
-                              {item.label}
-                            </button>
-                          ))}
+                      {settings.showWeekdayHeaders && (
+                        <div className="pt-1">
+                          <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">星期提示语言</label>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {[
+                              { id: 'zh', label: '中文' },
+                              { id: 'ja', label: '日本語' },
+                              { id: 'en', label: 'English' },
+                            ].map((item) => (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => setSettings(p => ({ ...p, weekdayLanguage: item.id as 'zh' | 'ja' | 'en' }))}
+                                className={`py-1 px-1 text-[10px] font-bold rounded-sm border cursor-pointer transition-all ${
+                                  currentWeekdayLanguage === item.id
+                                    ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
+                                    : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
+                                }`}
+                              >
+                                {item.label}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       
                       {/* First day of week option */}
-                      <div>
+                      <div className="pt-1 border-t border-neutral-200">
                         <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">每周起始日</label>
                         <div className="grid grid-cols-2 gap-2">
                           <button
@@ -1647,11 +1655,94 @@ export default function App() {
                   )}
                 </div>
 
-                {/* 2.3 Border customizer */}
+                {/* 2.3 Grid Background Color (Newly moved here) */}
                 <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
                     <SlidersHorizontal className="w-4 h-4 text-black" />
-                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.3 物理边框微调</h3>
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.3 格子背景颜色</h3>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    {(settings.weekStartDay === 'sunday' ? [0, 1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6, 0]).map((dayIdx) => {
+                        const labels = weekdayLabelSets['zh'][settings.weekStartDay || 'monday'];
+                        const labelIdx = settings.weekStartDay === 'sunday' ? dayIdx : (dayIdx === 0 ? 6 : dayIdx - 1);
+                        const currentColor = settings.weekdayColors?.[dayIdx] || '#ffffff';
+
+                      return (
+                        <div key={dayIdx} className="space-y-1.5">
+                          <span className="block text-[10px] font-bold text-neutral-500 uppercase">星期{labels[labelIdx]}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap gap-2">
+                              {[
+                                { color: '#ffffff', label: '无' },
+                                { color: '#f5f5f5', label: '浅灰' },
+                                { color: '#fee2e2', label: '淡粉' },
+                                { color: '#fef3c7', label: '浅橙' },
+                                { color: '#ecfdf5', label: '薄荷' },
+                                { color: '#eff6ff', label: '天蓝' },
+                                { color: '#faf5ff', label: '丁香' },
+                              ].map((item) => (
+                                <button
+                                  key={item.color}
+                                  type="button"
+                                  onClick={() => {
+                                    setSettings(p => ({
+                                      ...p,
+                                      weekdayColors: {
+                                        ...(p.weekdayColors || {}),
+                                        [dayIdx]: item.color === '#ffffff' ? undefined : item.color
+                                      }
+                                    }));
+                                  }}
+                                  style={{ backgroundColor: item.color }}
+                                  className={`w-6.5 h-6.5 shrink-0 rounded-sm border flex items-center justify-center transition-all cursor-pointer ${
+                                    currentColor.toLowerCase() === item.color.toLowerCase()
+                                      ? 'border-yellow-400 scale-110 shadow-sm ring-2 ring-black'
+                                      : 'border-white hover:scale-105'
+                                  }`}
+                                  title={item.label}
+                                >
+                                  {currentColor.toLowerCase() === item.color.toLowerCase() && item.color !== '#ffffff' && (
+                                    <Check className="w-3.5 h-3.5 text-white mix-blend-difference" />
+                                  )}
+                                  {item.color === '#ffffff' && currentColor === '#ffffff' && (
+                                    <div className="w-2.5 h-[1px] bg-neutral-300 rotate-45" />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* HEX custom color picker - aligned with swatches */}
+                            <input
+                              type="text"
+                              maxLength={7}
+                              value={currentColor}
+                              onClick={(e) => (e.target as HTMLInputElement).select()}
+                              onChange={(e) => {
+                                const newColor = e.target.value;
+                                setSettings(p => ({
+                                  ...p,
+                                  weekdayColors: {
+                                    ...(p.weekdayColors || {}),
+                                    [dayIdx]: newColor.toLowerCase() === '#ffffff' || newColor === '' ? undefined : newColor
+                                  }
+                                }));
+                              }}
+                              className="w-16 h-6.5 shrink-0 font-mono text-[10px] bg-white border border-neutral-200 rounded-sm px-1.5 uppercase text-center focus:border-neutral-400 focus:outline-none transition-colors ml-auto"
+                              placeholder="#FFFFFF"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2.4 Border customizer */}
+                <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
+                  <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
+                    <SlidersHorizontal className="w-4 h-4 text-black" />
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.4 物理边框微调</h3>
                   </div>
 
                   {/* Border Width (in mm, highly exact for printing) */}
@@ -1702,51 +1793,46 @@ export default function App() {
                   {/* Border Palette Colors */}
                   <div className="pt-1">
                     <label className="block text-[10px] font-bold text-neutral-400 tracking-wider uppercase mb-2">边框墨水色彩</label>
-                    <div className="flex flex-wrap gap-2 mb-2.5">
-                      {[
-                        { color: '#171717', label: '深炭墨' },
-                        { color: '#525252', label: '中铅灰' },
-                        { color: '#a3a3a3', label: '浅木铅' },
-                        { color: '#b91c1c', label: '印泥红' },
-                        { color: '#1d4ed8', label: '群青蓝' },
-                        { color: '#047857', label: '松针绿' },
-                        { color: '#b45309', label: '复古赭' },
-                      ].map((item) => (
-                        <button
-                          key={item.color}
-                          type="button"
-                          onClick={() => setSettings(p => ({ ...p, borderColor: item.color }))}
-                          style={{ backgroundColor: item.color }}
-                          className={`w-6.5 h-6.5 rounded-sm border flex items-center justify-center transition-all cursor-pointer ${
-                            settings.borderColor.toLowerCase() === item.color.toLowerCase()
-                              ? 'border-yellow-400 scale-110 shadow-sm ring-2 ring-black'
-                              : 'border-white hover:scale-105'
-                          }`}
-                          title={item.label}
-                        >
-                          {settings.borderColor.toLowerCase() === item.color.toLowerCase() && (
-                            <Check className="w-3.5 h-3.5 text-white mix-blend-difference" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* HEX custom color picker */}
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { color: '#171717', label: '深炭墨' },
+                          { color: '#525252', label: '中铅灰' },
+                          { color: '#a3a3a3', label: '浅木铅' },
+                          { color: '#b91c1c', label: '印泥红' },
+                          { color: '#1d4ed8', label: '群青蓝' },
+                          { color: '#047857', label: '松针绿' },
+                          { color: '#b45309', label: '复古赭' },
+                        ].map((item) => (
+                          <button
+                            key={item.color}
+                            type="button"
+                            onClick={() => setSettings(p => ({ ...p, borderColor: item.color }))}
+                            style={{ backgroundColor: item.color }}
+                            className={`w-6.5 h-6.5 shrink-0 rounded-sm border flex items-center justify-center transition-all cursor-pointer ${
+                              settings.borderColor.toLowerCase() === item.color.toLowerCase()
+                                ? 'border-yellow-400 scale-110 shadow-sm ring-2 ring-black'
+                                : 'border-white hover:scale-105'
+                            }`}
+                            title={item.label}
+                          >
+                            {settings.borderColor.toLowerCase() === item.color.toLowerCase() && (
+                              <Check className="w-3.5 h-3.5 text-white mix-blend-difference" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      {/* HEX custom color picker - aligned with swatches */}
                       <input
-                        type="color"
-                        value={settings.borderColor}
-                        onChange={(e) => setSettings(p => ({ ...p, borderColor: e.target.value }))}
-                        className="w-7 h-7 rounded-sm border border-neutral-200 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        maxLength={7}
-                        value={settings.borderColor}
-                        onChange={(e) => setSettings(p => ({ ...p, borderColor: e.target.value }))}
-                        className="w-full font-mono text-xs bg-white border border-[#e5e5e5] rounded-sm py-1 px-2.5 uppercase"
-                        placeholder="#000000"
-                      />
+                          type="text"
+                          maxLength={7}
+                          value={settings.borderColor}
+                          onClick={(e) => (e.target as HTMLInputElement).select()}
+                          onChange={(e) => setSettings(p => ({ ...p, borderColor: e.target.value }))}
+                          className="w-16 h-6.5 shrink-0 font-mono text-[10px] bg-white border border-neutral-200 rounded-sm px-1.5 uppercase text-center focus:border-neutral-400 focus:outline-none transition-colors ml-auto"
+                          placeholder="#000000"
+                        />
                     </div>
                   </div>
 
@@ -2577,8 +2663,8 @@ export default function App() {
                             let backgroundStyle: string | undefined = undefined;
                             if (isBlackedOut) {
                               backgroundStyle = settings.borderColor;
-                            } else if (shouldHighlightWeekend) {
-                              backgroundStyle = '#fafafb';
+                            } else if (settings.weekdayColors?.[day.dayOfWeek]) {
+                              backgroundStyle = settings.weekdayColors[day.dayOfWeek];
                             }
 
                             const handleCellClick = () => {
