@@ -642,7 +642,7 @@ export default function App() {
     } else if (currentFlowMode === 'auto-fill') {
       // Auto fill horizontal
       const colFit = Math.floor((innerPaperWidthMm + gapCol) / (settings.gridWidth + gapCol));
-      actualCols = Math.max(1, colFit);
+      actualCols = isFinite(colFit) && colFit > 0 ? colFit : 1;
     }
     actualRows = Math.ceil(listItems.length / actualCols);
   } else {
@@ -654,7 +654,7 @@ export default function App() {
     } else if (currentFlowMode === 'auto-fill') {
       // Auto fill vertical
       const rowFit = Math.floor((innerPaperHeightMm + gapRow) / (settings.gridHeight + gapRow));
-      actualRows = Math.max(1, rowFit);
+      actualRows = isFinite(rowFit) && rowFit > 0 ? rowFit : 1;
     }
     actualCols = Math.ceil(listItems.length / actualRows);
   }
@@ -905,11 +905,11 @@ export default function App() {
                       <div className="flex items-center gap-2">
                         <input
                           type="number"
-                          min="1"
+                          min="0"
                           max="5000"
                           value={totalDays}
                           onChange={(e) => {
-                            const val = parseInt(e.target.value) || 1;
+                            const val = e.target.value === '' ? 0 : parseInt(e.target.value);
                             const startD = parseLocalDate(settings.startDate);
                             if (startD && !isNaN(startD.getTime())) {
                               const endD = new Date(startD.getTime() + (val - 1) * 24 * 60 * 60 * 1000);
@@ -1002,12 +1002,10 @@ export default function App() {
                         <div className="flex items-center gap-1.5">
                           <input
                             type="number"
-                            min="30"
-                            max="600"
                             value={settings.paperWidth}
                             onChange={(e) => setSettings(p => ({
                               ...p,
-                              paperWidth: Number(e.target.value) || 30,
+                              paperWidth: e.target.value === '' ? 0 : Number(e.target.value),
                               paperPreset: 'custom'
                             }))}
                             className="w-full text-xs font-mono bg-white border border-[#e5e5e5] rounded-sm p-2 focus:outline-none focus:border-black text-right"
@@ -1021,12 +1019,10 @@ export default function App() {
                         <div className="flex items-center gap-1.5">
                           <input
                             type="number"
-                            min="30"
-                            max="600"
                             value={settings.paperHeight}
                             onChange={(e) => setSettings(p => ({
                               ...p,
-                              paperHeight: Number(e.target.value) || 30,
+                              paperHeight: e.target.value === '' ? 0 : Number(e.target.value),
                               paperPreset: 'custom'
                             }))}
                             className="w-full text-xs font-mono bg-white border border-[#e5e5e5] rounded-sm p-2 focus:outline-none focus:border-black text-right"
@@ -1427,12 +1423,10 @@ export default function App() {
                       </div>
                       <input
                         type="number"
-                        min="1.5"
-                        max="30"
                         step="0.5"
                         value={settings.gridWidth / 2}
                         onChange={(e) => {
-                          const r = Number(e.target.value) || 1.5;
+                          const r = e.target.value === '' ? 0 : Number(e.target.value);
                           const d = r * 2;
                           setSettings(p => ({
                             ...p,
@@ -1453,12 +1447,10 @@ export default function App() {
                         </div>
                         <input
                           type="number"
-                          min="3"
-                          max="60"
                           step="0.5"
                           value={settings.gridWidth}
                           onChange={(e) => {
-                            const w = Number(e.target.value) || 3;
+                            const w = e.target.value === '' ? 0 : Number(e.target.value);
                             const isSynced = settings.syncGridSize !== false;
                             const newHeight = isSynced ? w : settings.gridHeight;
                             setSettings(p => {
@@ -1526,12 +1518,10 @@ export default function App() {
                         </div>
                         <input
                           type="number"
-                          min="3"
-                          max="60"
                           step="0.5"
                           value={settings.gridHeight}
                           onChange={(e) => {
-                            const h = Number(e.target.value) || 3;
+                            const h = e.target.value === '' ? 0 : Number(e.target.value);
                             const isSynced = settings.syncGridSize !== false;
                             const newWidth = isSynced ? h : settings.gridWidth;
                             setSettings(p => {
@@ -2367,6 +2357,19 @@ export default function App() {
                 height: `${settings.paperHeight * finalScale}px`,
               }}
             >
+              {/* Alert centered consistently with the wrapper/paper */}
+              {(settings.paperWidth === 0 || settings.paperHeight === 0 || settings.gridWidth === 0 || settings.gridHeight === 0) && (
+                <div 
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none z-50 w-max"
+                >
+                  <div className="text-red-600 font-bold bg-white/95 px-5 py-4 rounded-lg shadow-xl backdrop-blur-sm border border-red-200 text-sm animate-fadeIn text-center flex flex-col gap-2 min-w-[240px]">
+                    <AlertTriangle className="w-6 h-6 mx-auto text-red-500 mb-1" />
+                    <span>尺寸设置提示</span>
+                    <span className="text-xs text-neutral-500 font-normal">纸张或格子的物理尺寸不能为 0，请在左侧面板重新调整参数。</span>
+                  </div>
+                </div>
+              )}
+
             {/* Real 1:1 millimetric DOM Canvas */}
             <div
               id="print-canvas"
@@ -2377,10 +2380,12 @@ export default function App() {
                 padding: `${settings.paperPadding}mm`,
                 boxSizing: 'border-box',
                 transform: `scale(${zoom})`,
+                display: (settings.paperWidth === 0 || settings.paperHeight === 0) ? 'none' : 'flex'
               }}
             >
               {/* Actual paper layout inside */}
-              <div className="flex flex-col h-full w-full justify-between select-text text-neutral-900">
+              {!(settings.paperWidth === 0 || settings.paperHeight === 0 || settings.gridWidth === 0 || settings.gridHeight === 0) && (
+                <div className="flex flex-col h-full w-full justify-between select-text text-neutral-900">
                 
                 {/* Upper paper elements and grid layout */}
                 <div className="flex-1 flex flex-col">
@@ -2752,6 +2757,7 @@ export default function App() {
                 )}
 
               </div>
+              )}
             </div>
           </div>
           </div>
