@@ -1442,7 +1442,7 @@ export default function App() {
                     <div className="flex items-end gap-2.5">
                       <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
-                          <label className="block text-[10px] font-bold text-neutral-400 tracking-wider uppercase">格子物理宽度</label>
+                          <label className="block text-[10px] font-bold text-neutral-400 tracking-wider uppercase">格子宽度</label>
                           <span className="text-xs font-mono text-black font-bold">{settings.gridWidth} mm</span>
                         </div>
                         <input
@@ -1513,7 +1513,7 @@ export default function App() {
 
                       <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
-                          <label className="block text-[10px] font-bold text-neutral-400 tracking-wider uppercase">格子物理高度</label>
+                          <label className="block text-[10px] font-bold text-neutral-400 tracking-wider uppercase">格子高度</label>
                           <span className="text-xs font-mono text-black font-bold">{settings.gridHeight} mm</span>
                         </div>
                         <input
