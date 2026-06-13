@@ -1149,77 +1149,8 @@ export default function App() {
                   {/* Mode-specific Context Options */}
                   {currentFlowMode === 'week-wrap' && (
                     <div className="p-3 bg-neutral-50 border border-neutral-150 rounded-sm space-y-3 animate-fadeIn">
-                      <span className="block text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest border-b border-neutral-200 pb-1">
-                        按周设置
-                      </span>
-
-                      <label className="flex items-center justify-between cursor-pointer py-1">
-                        <span className="text-xs font-semibold text-neutral-700">显示顶部星期提示</span>
-                        <input
-                          type="checkbox"
-                          checked={settings.showWeekdayHeaders ?? true}
-                          onChange={(e) => setSettings(p => ({ ...p, showWeekdayHeaders: e.target.checked }))}
-                          className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
-                        />
-                      </label>
-
-                      {settings.showWeekdayHeaders && (
-                        <div className="pt-1">
-                          <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">星期提示语言</label>
-                          <div className="grid grid-cols-3 gap-1.5">
-                            {[
-                              { id: 'zh', label: '中文' },
-                              { id: 'ja', label: '日本語' },
-                              { id: 'en', label: 'English' },
-                            ].map((item) => (
-                              <button
-                                key={item.id}
-                                type="button"
-                                onClick={() => setSettings(p => ({ ...p, weekdayLanguage: item.id as 'zh' | 'ja' | 'en' }))}
-                                className={`py-1 px-1 text-[10px] font-bold rounded-sm border cursor-pointer transition-all ${
-                                  currentWeekdayLanguage === item.id
-                                    ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
-                                    : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
-                                }`}
-                              >
-                                {item.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* First day of week option */}
-                      <div className="pt-1 border-t border-neutral-200">
-                        <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">每周起始日</label>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setSettings(p => ({ ...p, weekStartDay: 'monday' }))}
-                            className={`py-1 px-2 text-[11px] font-bold rounded-sm border cursor-pointer transition-all ${
-                              currentWeekStartDay === 'monday'
-                                ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
-                                : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
-                            }`}
-                          >
-                            周一
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setSettings(p => ({ ...p, weekStartDay: 'sunday' }))}
-                            className={`py-1 px-2 text-[11px] font-bold rounded-sm border cursor-pointer transition-all ${
-                              currentWeekStartDay === 'sunday'
-                                ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
-                                : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
-                            }`}
-                          >
-                            周日
-                          </button>
-                        </div>
-                      </div>
-
                       {/* Weeks Per Line selection (New Feature support: 按星期换行 支持单行显示多个星期) */}
-                      <div className="pt-1 border-t border-neutral-200">
+                      <div className="pt-1">
                         <label className="block text-[9.5px] font-bold text-neutral-700 uppercase font-sans">
                           每行周数
                         </label>
@@ -1252,7 +1183,73 @@ export default function App() {
                           <span>1 周</span>
                           <span>10 周</span>
                         </div>
-                        <p className="mt-1 text-[9px] text-neutral-450 leading-tight">控制每行或每列显示几周，也可直接输入更大的数值。</p>
+                      </div>
+
+                      <div className="pt-1 border-t border-neutral-200">
+                        <label className="flex items-center justify-between cursor-pointer py-1">
+                          <span className="text-xs font-semibold text-neutral-700">显示顶部星期提示</span>
+                          <input
+                            type="checkbox"
+                            checked={settings.showWeekdayHeaders ?? true}
+                            onChange={(e) => setSettings(p => ({ ...p, showWeekdayHeaders: e.target.checked }))}
+                            className="accent-black h-4 w-4 border-neutral-300 rounded-sm"
+                          />
+                        </label>
+
+                        {settings.showWeekdayHeaders && (
+                          <div className="pt-1">
+                            <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">星期提示语言</label>
+                            <div className="grid grid-cols-3 gap-1.5">
+                              {[
+                                { id: 'zh', label: '中文' },
+                                { id: 'ja', label: '日本語' },
+                                { id: 'en', label: 'English' },
+                              ].map((item) => (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => setSettings(p => ({ ...p, weekdayLanguage: item.id as 'zh' | 'ja' | 'en' }))}
+                                  className={`py-1 px-1 text-[10px] font-bold rounded-sm border cursor-pointer transition-all ${
+                                    currentWeekdayLanguage === item.id
+                                      ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
+                                      : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
+                                  }`}
+                                >
+                                  {item.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* First day of week option */}
+                      <div className="pt-1 border-t border-neutral-200">
+                        <label className="block text-[9px] font-bold text-neutral-400 uppercase mb-1.5">每周起始日</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setSettings(p => ({ ...p, weekStartDay: 'monday' }))}
+                            className={`py-1 px-2 text-[11px] font-bold rounded-sm border cursor-pointer transition-all ${
+                              currentWeekStartDay === 'monday'
+                                ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
+                                : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
+                            }`}
+                          >
+                            周一
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSettings(p => ({ ...p, weekStartDay: 'sunday' }))}
+                            className={`py-1 px-2 text-[11px] font-bold rounded-sm border cursor-pointer transition-all ${
+                              currentWeekStartDay === 'sunday'
+                                ? 'bg-white border-neutral-900 text-neutral-900 shadow-2xs'
+                                : 'bg-transparent border-neutral-200 text-neutral-500 hover:text-neutral-700'
+                            }`}
+                          >
+                            周日
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
