@@ -1642,94 +1642,11 @@ export default function App() {
                   )}
                 </div>
 
-                {/* 2.3 Grid Background Color (Newly moved here) */}
+                {/* 2.3 Border customizer */}
                 <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
                     <SlidersHorizontal className="w-4 h-4 text-black" />
-                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.3 格子背景颜色</h3>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    {(settings.weekStartDay === 'sunday' ? [0, 1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6, 0]).map((dayIdx) => {
-                        const labels = weekdayLabelSets['zh'][settings.weekStartDay || 'monday'];
-                        const labelIdx = settings.weekStartDay === 'sunday' ? dayIdx : (dayIdx === 0 ? 6 : dayIdx - 1);
-                        const currentColor = settings.weekdayColors?.[dayIdx] || '#ffffff';
-
-                      return (
-                        <div key={dayIdx} className="space-y-1.5">
-                          <span className="block text-[10px] font-bold text-neutral-500 uppercase">星期{labels[labelIdx]}</span>
-                          <div className="flex items-center gap-2">
-                            <div className="flex flex-wrap gap-2">
-                              {[
-                                { color: '#ffffff', label: '无' },
-                                { color: '#f5f5f5', label: '浅灰' },
-                                { color: '#fee2e2', label: '淡粉' },
-                                { color: '#fef3c7', label: '浅橙' },
-                                { color: '#ecfdf5', label: '薄荷' },
-                                { color: '#eff6ff', label: '天蓝' },
-                                { color: '#faf5ff', label: '丁香' },
-                              ].map((item) => (
-                                <button
-                                  key={item.color}
-                                  type="button"
-                                  onClick={() => {
-                                    setSettings(p => ({
-                                      ...p,
-                                      weekdayColors: {
-                                        ...(p.weekdayColors || {}),
-                                        [dayIdx]: item.color === '#ffffff' ? undefined : item.color
-                                      }
-                                    }));
-                                  }}
-                                  style={{ backgroundColor: item.color }}
-                                  className={`w-6.5 h-6.5 shrink-0 rounded-sm border flex items-center justify-center transition-all cursor-pointer ${
-                                    currentColor.toLowerCase() === item.color.toLowerCase()
-                                      ? 'border-yellow-400 scale-110 shadow-sm ring-2 ring-black'
-                                      : 'border-white hover:scale-105'
-                                  }`}
-                                  title={item.label}
-                                >
-                                  {currentColor.toLowerCase() === item.color.toLowerCase() && item.color !== '#ffffff' && (
-                                    <Check className="w-3.5 h-3.5 text-white mix-blend-difference" />
-                                  )}
-                                  {item.color === '#ffffff' && currentColor === '#ffffff' && (
-                                    <div className="w-2.5 h-[1px] bg-neutral-300 rotate-45" />
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-
-                            {/* HEX custom color picker - aligned with swatches */}
-                            <input
-                              type="text"
-                              maxLength={7}
-                              value={currentColor}
-                              onClick={(e) => (e.target as HTMLInputElement).select()}
-                              onChange={(e) => {
-                                const newColor = e.target.value;
-                                setSettings(p => ({
-                                  ...p,
-                                  weekdayColors: {
-                                    ...(p.weekdayColors || {}),
-                                    [dayIdx]: newColor.toLowerCase() === '#ffffff' || newColor === '' ? undefined : newColor
-                                  }
-                                }));
-                              }}
-                              className="w-16 h-6.5 shrink-0 font-mono text-[10px] bg-white border border-neutral-200 rounded-sm px-1.5 uppercase text-center focus:border-neutral-400 focus:outline-none transition-colors ml-auto"
-                              placeholder="#FFFFFF"
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 2.4 Border customizer */}
-                <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
-                  <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
-                    <SlidersHorizontal className="w-4 h-4 text-black" />
-                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.4 物理边框微调</h3>
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.3 物理边框微调</h3>
                   </div>
 
                   {/* Border Width (in mm, highly exact for printing) */}
@@ -1824,6 +1741,89 @@ export default function App() {
                   </div>
 
 
+                </div>
+
+                {/* 2.4 Grid Background Color (Newly moved here) */}
+                <div className="bg-white rounded-sm p-5 border border-[#e5e5e5] space-y-4 shadow-2xs">
+                  <div className="flex items-center gap-2 pb-2.5 border-b border-neutral-100">
+                    <SlidersHorizontal className="w-4 h-4 text-black" />
+                    <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wide">2.4 格子背景颜色</h3>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    {(settings.weekStartDay === 'sunday' ? [0, 1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6, 0]).map((dayIdx) => {
+                        const labels = weekdayLabelSets['zh'][settings.weekStartDay || 'monday'];
+                        const labelIdx = settings.weekStartDay === 'sunday' ? dayIdx : (dayIdx === 0 ? 6 : dayIdx - 1);
+                        const currentColor = settings.weekdayColors?.[dayIdx] || '#ffffff';
+
+                      return (
+                        <div key={dayIdx} className="space-y-1.5">
+                          <span className="block text-[10px] font-bold text-neutral-500 uppercase">星期{labels[labelIdx]}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap gap-2">
+                              {[
+                                { color: '#ffffff', label: '无' },
+                                { color: '#f5f5f5', label: '浅灰' },
+                                { color: '#fee2e2', label: '淡粉' },
+                                { color: '#fef3c7', label: '浅橙' },
+                                { color: '#ecfdf5', label: '薄荷' },
+                                { color: '#eff6ff', label: '天蓝' },
+                                { color: '#faf5ff', label: '丁香' },
+                              ].map((item) => (
+                                <button
+                                  key={item.color}
+                                  type="button"
+                                  onClick={() => {
+                                    setSettings(p => ({
+                                      ...p,
+                                      weekdayColors: {
+                                        ...(p.weekdayColors || {}),
+                                        [dayIdx]: item.color === '#ffffff' ? undefined : item.color
+                                      }
+                                    }));
+                                  }}
+                                  style={{ backgroundColor: item.color }}
+                                  className={`w-6.5 h-6.5 shrink-0 rounded-sm border flex items-center justify-center transition-all cursor-pointer ${
+                                    currentColor.toLowerCase() === item.color.toLowerCase()
+                                      ? 'border-yellow-400 scale-110 shadow-sm ring-2 ring-black'
+                                      : 'border-white hover:scale-105'
+                                  }`}
+                                  title={item.label}
+                                >
+                                  {currentColor.toLowerCase() === item.color.toLowerCase() && item.color !== '#ffffff' && (
+                                    <Check className="w-3.5 h-3.5 text-white mix-blend-difference" />
+                                  )}
+                                  {item.color === '#ffffff' && currentColor === '#ffffff' && (
+                                    <div className="w-2.5 h-[1px] bg-neutral-300 rotate-45" />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* HEX custom color picker - aligned with swatches */}
+                            <input
+                              type="text"
+                              maxLength={7}
+                              value={currentColor}
+                              onClick={(e) => (e.target as HTMLInputElement).select()}
+                              onChange={(e) => {
+                                const newColor = e.target.value;
+                                setSettings(p => ({
+                                  ...p,
+                                  weekdayColors: {
+                                    ...(p.weekdayColors || {}),
+                                    [dayIdx]: newColor.toLowerCase() === '#ffffff' || newColor === '' ? undefined : newColor
+                                  }
+                                }));
+                              }}
+                              className="w-16 h-6.5 shrink-0 font-mono text-[10px] bg-white border border-neutral-200 rounded-sm px-1.5 uppercase text-center focus:border-neutral-400 focus:outline-none transition-colors ml-auto"
+                              placeholder="#FFFFFF"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
