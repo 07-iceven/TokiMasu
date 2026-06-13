@@ -2427,7 +2427,7 @@ export default function App() {
                         <div 
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: `repeat(${7 * customWeeksPerLine}, ${settings.gridWidth}mm)`,
+                            gridTemplateColumns: `repeat(${7 * customWeeksPerLine}, max-content)`,
                             columnGap: `${Math.max(0, gapCol)}mm`,
                             width: 'max-content',
                             marginBottom: `${Math.max(0, gapRow)}mm`,
@@ -2436,10 +2436,13 @@ export default function App() {
                         >
                           {Array.from({ length: customWeeksPerLine }).flatMap((_, wIdx) => {
                             return weekdayLabels.map((label, lIdx) => ({ label, key: `${wIdx}-${lIdx}` }));
-                          }).map(({ label, key }) => (
+                          }).map(({ label, key }, idx) => (
                             <div 
                               key={key} 
-                              style={{ width: `${settings.gridWidth}mm` }}
+                              style={{ 
+                                width: `${settings.gridWidth}mm`,
+                                marginLeft: (useSharedBorders && idx > 0) ? `-${settings.borderWidth}mm` : '0px'
+                              }}
                               className="text-[9px] font-bold text-center text-neutral-400 select-none uppercase tracking-wider font-sans"
                             >
                               {label}
@@ -2454,7 +2457,7 @@ export default function App() {
                           <div 
                             style={{
                               display: 'grid',
-                              gridTemplateRows: `repeat(${7 * customWeeksPerLine}, ${settings.gridHeight}mm)`,
+                              gridTemplateRows: `repeat(${7 * customWeeksPerLine}, max-content)`,
                               rowGap: `${Math.max(0, gapRow)}mm`,
                               marginRight: `${Math.max(0, gapCol)}mm`,
                               height: 'max-content',
@@ -2464,10 +2467,13 @@ export default function App() {
                           >
                             {Array.from({ length: customWeeksPerLine }).flatMap((_, wIdx) => {
                               return weekdayLabels.map((label, lIdx) => ({ label, key: `${wIdx}-${lIdx}` }));
-                            }).map(({ label, key }) => (
+                            }).map(({ label, key }, idx) => (
                               <div 
                                 key={key} 
-                                style={{ height: `${settings.gridHeight}mm` }}
+                                style={{ 
+                                  height: `${settings.gridHeight}mm`,
+                                  marginTop: (useSharedBorders && idx > 0) ? `-${settings.borderWidth}mm` : '0px'
+                                }}
                                 className="text-[9px] font-bold text-right text-neutral-400 select-none uppercase tracking-wider font-sans pr-1.5 flex items-center justify-end"
                               >
                                 {label}
@@ -2480,10 +2486,10 @@ export default function App() {
                           style={{
                             display: 'grid',
                             gridTemplateColumns: settings.orientation === 'horizontal' 
-                              ? `repeat(${actualCols}, ${settings.gridWidth}mm)` 
+                              ? `repeat(${actualCols}, max-content)` 
                               : undefined,
                             gridTemplateRows: settings.orientation === 'vertical' 
-                              ? `repeat(${actualRows}, ${settings.gridHeight}mm)` 
+                              ? `repeat(${actualRows}, max-content)` 
                               : undefined,
                             gridAutoFlow: settings.orientation === 'vertical' 
                               ? 'column' 
@@ -2523,9 +2529,18 @@ export default function App() {
                             let bColor = item.type === 'placeholder' ? placeholderColor : settings.borderColor;
                             let lColor = item.type === 'placeholder' ? placeholderColor : settings.borderColor;
 
+                            let mTop = '0px';
+                            let mLeft = '0px';
+
                             if (useSharedBorders) {
-                              if (colIdx > 0) bLeft = '0px';
-                              if (rowIdx > 0) bTop = '0px';
+                              if (colIdx > 0) {
+                                mLeft = `-${settings.borderWidth}mm`;
+                                lColor = 'transparent';
+                              }
+                              if (rowIdx > 0) {
+                                mTop = `-${settings.borderWidth}mm`;
+                                tColor = 'transparent';
+                              }
 
                               if (item.type === 'placeholder') {
                                 const rightItem = getItemAt(colIdx + 1, rowIdx);
@@ -2566,6 +2581,9 @@ export default function App() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                marginTop: mTop,
+                                marginLeft: mLeft,
+                                backgroundClip: 'padding-box',
                               };
   
                               // Rounded geometry configurations
@@ -2608,6 +2626,9 @@ export default function App() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               transition: 'border-color 0.15s',
+                              marginTop: mTop,
+                              marginLeft: mLeft,
+                              backgroundClip: 'padding-box',
                             };
   
                             // Rounded geometry configurations
