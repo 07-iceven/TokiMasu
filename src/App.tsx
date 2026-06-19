@@ -250,7 +250,7 @@ export default function App() {
     paperWidth: 210,
     paperHeight: 297,
     showTitle: true,
-    titleText: '时格 · TokiMasu',
+    titleText: 'TokiMasu',
     subtitleText: '笔落一格，度过一日。',
     titleFontSize: 18,
     titleSpacing: 12,
@@ -784,7 +784,7 @@ export default function App() {
             />
             <div>
               <h1 className="text-lg font-bold tracking-tight text-neutral-900 flex items-center gap-1.5 font-serif">
-                TokiMasu <span className="text-xs font-medium text-neutral-500 font-sans px-1.5 py-0.5 bg-neutral-100 border border-neutral-200 rounded-xs">时格</span>
+                TokiMasu
               </h1>
               <p className="text-[11px] text-neutral-500 font-medium">
                 笔落一格，度过一日。
@@ -2262,7 +2262,7 @@ export default function App() {
                       paperWidth: 210,
                       paperHeight: 297,
                       showTitle: true,
-                      titleText: '时格 · TokiMasu',
+                      titleText: 'TokiMasu',
                       subtitleText: '笔落一格，度过一日。',
                       titleFontSize: 18,
                       titleSpacing: 12,
@@ -2404,7 +2404,7 @@ export default function App() {
                         className="font-bold tracking-tight text-neutral-950 font-serif leading-none"
                         style={{ fontSize: `${settings.titleFontSize}pt` }}
                       >
-                        {settings.titleText || '时格'}
+                        {settings.titleText || 'TokiMasu'}
                       </h2>
                       {settings.subtitleText && (
                         <p 
