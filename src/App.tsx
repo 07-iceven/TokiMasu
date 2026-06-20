@@ -2557,25 +2557,34 @@ export default function App() {
                             let mLeft = '0px';
 
                             if (useSharedBorders) {
-                              if (colIdx > 0) {
-                                mLeft = `-${settings.borderWidth}mm`;
+                              // We must use the exact border ownership method to avoid subpixel rendering issues
+                              // both on screen and in print. Negative margins cause unpredictable overlaps.
+                              bLeft = colIdx === 0 ? `${settings.borderWidth}mm` : '0px';
+                              bTop = rowIdx === 0 ? `${settings.borderWidth}mm` : '0px';
+                              bRight = `${settings.borderWidth}mm`;
+                              bBottom = `${settings.borderWidth}mm`;
+
+                              const currentIsDay = item.type === 'day';
+                              
+                              if (colIdx === 0) {
+                                lColor = currentIsDay ? settings.borderColor : 'transparent';
+                              } else {
                                 lColor = 'transparent';
                               }
-                              if (rowIdx > 0) {
-                                mTop = `-${settings.borderWidth}mm`;
+
+                              if (rowIdx === 0) {
+                                tColor = currentIsDay ? settings.borderColor : 'transparent';
+                              } else {
                                 tColor = 'transparent';
                               }
 
-                              if (item.type === 'placeholder') {
-                                const rightItem = getItemAt(colIdx + 1, rowIdx);
-                                if (rightItem && rightItem.type === 'day') {
-                                  rColor = settings.borderColor;
-                                }
-                                const bottomItem = getItemAt(colIdx, rowIdx + 1);
-                                if (bottomItem && bottomItem.type === 'day') {
-                                  bColor = settings.borderColor;
-                                }
-                              }
+                              const rightItem = getItemAt(colIdx + 1, rowIdx);
+                              const rightIsDay = rightItem ? rightItem.type === 'day' : false;
+                              rColor = (currentIsDay || rightIsDay) ? settings.borderColor : 'transparent';
+
+                              const bottomItem = getItemAt(colIdx, rowIdx + 1);
+                              const bottomIsDay = bottomItem ? bottomItem.type === 'day' : false;
+                              bColor = (currentIsDay || bottomIsDay) ? settings.borderColor : 'transparent';
                             }
 
                             if (item.type === 'placeholder') {
@@ -2601,7 +2610,7 @@ export default function App() {
                                 borderBottomStyle: settings.borderStyle,
                                 borderLeftStyle: settings.borderStyle,
                                 position: 'relative',
-                                zIndex: 1,
+                                zIndex: listItems.length - itemIdx,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -2645,7 +2654,7 @@ export default function App() {
                               borderLeftColor: lColor,
                               borderStyle: settings.borderStyle,
                               position: 'relative',
-                              zIndex: 10,
+                              zIndex: listItems.length - itemIdx,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -2716,6 +2725,13 @@ export default function App() {
                               backgroundStyle = settings.weekdayColors[day.dayOfWeek];
                             }
 
+                            // Inject background directly into baseStyles
+                            if (backgroundStyle) {
+                              baseStyles.backgroundColor = backgroundStyle;
+                              baseStyles.WebkitPrintColorAdjust = 'exact';
+                              baseStyles.printColorAdjust = 'exact';
+                            }
+
                             const handleCellClick = () => {
                               if (settings.blackoutMode === 'custom') {
                                 const currentDates = settings.blackedOutDates || [];
@@ -2735,7 +2751,7 @@ export default function App() {
                             return (
                               <div 
                                 key={day.index}
-                                style={{ ...baseStyles, background: backgroundStyle }}
+                                style={baseStyles}
                                 onClick={handleCellClick}
                                 className={`group select-none transition-all ${
                                   settings.blackoutMode === 'custom' 
