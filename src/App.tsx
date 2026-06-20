@@ -806,9 +806,9 @@ export default function App() {
               draggable={false}
             />
             <div>
-              <h1 className="text-lg font-bold tracking-tight text-neutral-900 flex items-center gap-1.5 font-serif">
+              <div className="text-lg font-bold tracking-tight text-neutral-900 flex items-center gap-1.5 font-serif">
                 TokiMasu <span className="text-xs font-medium text-neutral-500 font-sans px-1.5 py-0.5 bg-neutral-100 border border-neutral-200 rounded-xs">时格</span>
-              </h1>
+              </div>
               <p className="text-[11px] text-neutral-500 font-medium">
                 笔落一格，度过一日。
               </p>
