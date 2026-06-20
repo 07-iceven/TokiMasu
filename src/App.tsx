@@ -243,45 +243,68 @@ export default function App() {
   const defaultEndDate = formatDateLocal(futureDate);
 
   // Core state settings
-  const [settings, setSettings] = useState<CalendarSettings & { orientation: GridOrientation }>({
-    startDate: defaultStartDate,
-    endDate: defaultEndDate,
-    paperPreset: 'A4',
-    paperWidth: 210,
-    paperHeight: 297,
-    showTitle: true,
-    titleText: '几格 · TokiMasu',
-    subtitleText: '笔落一格，度过一日。',
-    titleFontSize: 18,
-    titleSpacing: 12,
-    gridWidth: 15,
-    gridHeight: 15,
-    syncGridSize: true,
-    gridGap: 0,
-    gridShape: 'square',
-    borderRadius: 2,
-    borderWidth: 0.5,
-    borderStyle: 'solid',
-    borderColor: '#171717',
-    textMode: 'day-remain',
-    monthLanguage: 'zh',
-    innerPattern: 'empty',
-    highlightWeekends: false,
-    showWeekendLabels: false,
-    showWeekdayHeaders: true,
-    weekdayLanguage: 'zh',
-    showWeekNumbers: false,
-    showStats: false,
-    paperPadding: 15,
-    orientation: 'horizontal',
-    flowMode: 'week-wrap',
-    weeksPerLine: 1,
-    blackoutMode: 'none',
-    blackedOutDates: [],
-    noGridGap: true,
-    weekStartDay: 'monday',
-    weekdayColors: {},
+  const [settings, setSettings] = useState<CalendarSettings & { orientation: GridOrientation }>(() => {
+    const defaultSettings: CalendarSettings & { orientation: GridOrientation } = {
+      startDate: defaultStartDate,
+      endDate: defaultEndDate,
+      paperPreset: 'A4',
+      paperWidth: 210,
+      paperHeight: 297,
+      showTitle: true,
+      titleText: '时格 · TokiMasu',
+      subtitleText: '笔落一格，度过一日。',
+      titleFontSize: 18,
+      titleSpacing: 12,
+      gridWidth: 15,
+      gridHeight: 15,
+      syncGridSize: true,
+      gridGap: 0,
+      gridShape: 'square',
+      borderRadius: 2,
+      borderWidth: 0.5,
+      borderStyle: 'solid',
+      borderColor: '#171717',
+      textMode: 'day-remain',
+      monthLanguage: 'zh',
+      innerPattern: 'empty',
+      highlightWeekends: false,
+      showWeekendLabels: false,
+      showWeekdayHeaders: true,
+      weekdayLanguage: 'zh',
+      showWeekNumbers: false,
+      showStats: false,
+      paperPadding: 15,
+      orientation: 'horizontal',
+      flowMode: 'week-wrap',
+      weeksPerLine: 1,
+      blackoutMode: 'none',
+      blackedOutDates: [],
+      noGridGap: true,
+      weekStartDay: 'monday',
+      weekdayColors: {},
+    };
+
+    try {
+      const cached = localStorage.getItem('TOKIMASU_SETTINGS_CACHE');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return { ...defaultSettings, ...parsed };
+      }
+    } catch (e) {
+      console.error('Failed to load cached settings', e);
+    }
+
+    return defaultSettings;
   });
+
+  // Save settings to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('TOKIMASU_SETTINGS_CACHE', JSON.stringify(settings));
+    } catch (e) {
+      console.error('Failed to save settings to cache', e);
+    }
+  }, [settings]);
 
 
   const [templateTab, setTemplateTab] = useState<'export' | 'import'>('export');
@@ -784,7 +807,7 @@ export default function App() {
             />
             <div>
               <h1 className="text-lg font-bold tracking-tight text-neutral-900 flex items-center gap-1.5 font-serif">
-                TokiMasu <span className="text-xs font-medium text-neutral-500 font-sans px-1.5 py-0.5 bg-neutral-100 border border-neutral-200 rounded-xs">几格</span>
+                TokiMasu <span className="text-xs font-medium text-neutral-500 font-sans px-1.5 py-0.5 bg-neutral-100 border border-neutral-200 rounded-xs">时格</span>
               </h1>
               <p className="text-[11px] text-neutral-500 font-medium">
                 笔落一格，度过一日。
@@ -2262,7 +2285,7 @@ export default function App() {
                       paperWidth: 210,
                       paperHeight: 297,
                       showTitle: true,
-                      titleText: '几格 · TokiMasu',
+                      titleText: '时格 · TokiMasu',
                       subtitleText: '笔落一格，度过一日。',
                       titleFontSize: 18,
                       titleSpacing: 12,
@@ -2292,6 +2315,7 @@ export default function App() {
                       blackedOutDates: [],
                       noGridGap: true,
                       weekStartDay: 'monday',
+                      weekdayColors: {},
                     });
                   }
                 }}
@@ -2404,7 +2428,7 @@ export default function App() {
                         className="font-bold tracking-tight text-neutral-950 font-serif leading-none"
                         style={{ fontSize: `${settings.titleFontSize}pt` }}
                       >
-                        {settings.titleText || '几格'}
+                        {settings.titleText || '时格'}
                       </h2>
                       {settings.subtitleText && (
                         <p 
